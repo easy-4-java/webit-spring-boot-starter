@@ -106,6 +106,14 @@ class WebitAutoConfigurationTest {
 
     }
 
+    @Test
+    void resourceUrlEncodingFilterBeanCreatesWorkingFilter() {
+        WebitAutoConfiguration.BeetlWebConfiguration configuration =
+                new WebitAutoConfiguration.BeetlWebConfiguration();
+        assertThat(configuration.resourceUrlEncodingFilter())
+                .isInstanceOf(org.springframework.web.servlet.resource.ResourceUrlEncodingFilter.class);
+    }
+
     @Nested
     @DisplayName("CheckTemplateLocationExists")
     class CheckTemplateLocationTests {
@@ -118,6 +126,19 @@ class WebitAutoConfigurationTest {
                         WebitAutoConfiguration autoConfig = context.getBean(WebitAutoConfiguration.class);
                         // Should not throw even if template locations don't exist
                         autoConfig.checkTemplateLocationExists();
+                    });
+        }
+
+        @Test
+        void acceptsAnExistingTemplateLocation() {
+            contextRunner
+                    .withPropertyValues("spring.webit.check-template-location=true",
+                            "spring.webit.template-loader-path=classpath:/")
+                    .run(context -> {
+                        assertThat(context).hasNotFailed();
+                        WebitAutoConfiguration configuration =
+                                context.getBean(WebitAutoConfiguration.class);
+                        configuration.checkTemplateLocationExists();
                     });
         }
 
