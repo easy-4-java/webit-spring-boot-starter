@@ -13,14 +13,14 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 class WebitRenderingTest {
 
     @Test
-    void rendersTemplateWithBoundValue() throws Exception {
+    void rendersTemplateExpression() throws Exception {
         Engine engine = Engine.create();
         StringWriter output = new StringWriter();
 
         engine.getTemplate("templates/greeting.wit")
                 .merge(output);
 
-        assertThat(output.toString()).isEqualTo("Hello Ada!\n");
+        assertThat(output.toString()).isEqualTo("Hello 2!\n");
     }
 
     @Test
