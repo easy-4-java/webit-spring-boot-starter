@@ -7,6 +7,9 @@ import java.util.Properties;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.boot.test.system.CapturedOutput;
+import org.springframework.boot.test.system.OutputCaptureExtension;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
@@ -17,6 +20,7 @@ import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
  * @author <a href="https://github.com/loong10k">Loong Wan</a>
  * @since 1.0.0
  */
+@ExtendWith(OutputCaptureExtension.class)
 class WebitAutoConfigurationTest {
 
     private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
@@ -130,7 +134,7 @@ class WebitAutoConfigurationTest {
         }
 
         @Test
-        void acceptsAnExistingTemplateLocation() {
+        void acceptsAnExistingTemplateLocation(CapturedOutput output) {
             contextRunner
                     .withPropertyValues("spring.webit.check-template-location=true",
                             "spring.webit.template-loader-path=classpath:/")
@@ -140,18 +144,21 @@ class WebitAutoConfigurationTest {
                                 context.getBean(WebitAutoConfiguration.class);
                         configuration.checkTemplateLocationExists();
                     });
+            assertThat(output.getAll()).doesNotContain("Cannot find template location(s)");
         }
 
         @Test
-        void warnsWhenCheckEnabledAndTemplateNotFound() {
+        void warnsWhenCheckEnabledAndTemplateNotFound(CapturedOutput output) {
             contextRunner
                     .withPropertyValues("spring.webit.check-template-location=true",
                             "spring.webit.template-loader-path=classpath:/nonexistent/")
                     .run(context -> {
                         WebitAutoConfiguration autoConfig = context.getBean(WebitAutoConfiguration.class);
-                        // Should log a warning but not throw
+                        // A missing template location logs a warning without failing startup.
                         autoConfig.checkTemplateLocationExists();
                     });
+            assertThat(output.getAll()).contains("Cannot find template location(s)")
+                    .contains("classpath:/nonexistent/");
         }
 
     }
