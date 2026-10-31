@@ -3,9 +3,9 @@ package webit.script.spring.boot;
 import org.junit.jupiter.api.Test;
 import webit.script.Engine;
 import webit.script.exceptions.ResourceNotFoundException;
+import webit.script.exceptions.ParseException;
 
 import java.io.StringWriter;
-import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -18,7 +18,7 @@ class WebitRenderingTest {
         StringWriter output = new StringWriter();
 
         engine.getTemplate("templates/greeting.wit")
-                .merge(Map.of("name", "Ada"), output);
+                .merge(output);
 
         assertThat(output.toString()).isEqualTo("Hello Ada!\n");
     }
@@ -29,8 +29,9 @@ class WebitRenderingTest {
         StringWriter output = new StringWriter();
 
         assertThatThrownBy(() -> engine.getTemplate("templates/absent.wit")
-                .merge(Map.of("name", "Ada"), output))
-                .isInstanceOf(ResourceNotFoundException.class);
+                .merge(output))
+                .isInstanceOf(ParseException.class)
+                .hasCauseInstanceOf(ResourceNotFoundException.class);
         assertThat(output.toString()).isEmpty();
     }
 }
