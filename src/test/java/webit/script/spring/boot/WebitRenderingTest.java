@@ -13,7 +13,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 class WebitRenderingTest {
 
     @Test
-    void rendersTemplateWithBoundValue() {
+    void rendersTemplateWithBoundValue() throws Exception {
         Engine engine = Engine.create();
         StringWriter output = new StringWriter();
 
