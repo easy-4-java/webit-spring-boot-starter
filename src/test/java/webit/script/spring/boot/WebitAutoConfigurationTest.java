@@ -137,7 +137,7 @@ class WebitAutoConfigurationTest {
         void acceptsAnExistingTemplateLocation(CapturedOutput output) {
             contextRunner
                     .withPropertyValues("spring.webit.check-template-location=true",
-                            "spring.webit.template-loader-path=classpath:/")
+                            "spring.webit.template-loader-path=classpath:/templates/")
                     .run(context -> {
                         assertThat(context).hasNotFailed();
                         WebitAutoConfiguration configuration =
